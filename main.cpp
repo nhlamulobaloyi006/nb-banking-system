@@ -27,6 +27,19 @@ bool isUser = false;    // true when the login was successful
 // menu option that the user chooses
 int option;
 
+// ================= BANKING FUNCTIONS =================
+
+// Option 1: shows the account details and the current balance
+void checkBalance(double balance)
+{
+    cout << "=======================" << endl;
+    cout << "Account Details" << endl;
+    cout << "=======================" << endl;
+    cout << "Account Holder: " << name[0] << " " << surname << endl; // first letter of the name + surname
+    cout << "Account number: " << account_num << endl;
+    cout << "Balance: R" << balance << endl;
+}
+
 // ================= LOGIN FUNCTIONS =================
 
 // Checks that the username and pin were filled in correctly.
@@ -92,9 +105,58 @@ void authentication()
     }
 }
 
+// ================= MENU =================
+
+// Shows the menu, reads the choice and calls the correct function
+void menu()
+{
+    cout << "=======================" << endl;
+    cout << "Welcome back " << name << endl;
+    cout << "=======================" << endl;
+    cout << "Choose option" << endl;
+    cout << "1. Check Balance & Account Details" << endl;
+    cout << "5. Sign out" << endl;
+    cout << "0. Exit" << endl;
+    cout << "= ";
+    cin >> option;
+
+    // if the user typed letters, set option to -1 so it goes to the default case
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        option = -1;
+    }
+
+    // always send the latest balance from the array to the functions
+    switch (option)
+    {
+    case 1:
+        checkBalance(balances[getIndex]);
+        break;
+    case 5:
+        cout << "You have been signed out" << endl;
+        authentication();   // go back to the login screen
+        break;
+    case 0:
+        cout << "Exiting program.." << endl;
+        break;
+    default:
+        cout << "Invalid choice. Please enter a number from 0 to 5" << endl;
+        break;
+    }
+}
+
 // ================= MAIN =================
 int main()
 {
     authentication();   // the user must log in first
+
+    // show the menu again and again until the user chooses 0 (Exit)
+    do
+    {
+        menu();
+    } while (option != 0);
+
     return 0;
 }
