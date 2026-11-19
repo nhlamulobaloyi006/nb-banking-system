@@ -21,7 +21,7 @@ double balances[4] = {0, 10, 25, 30};
 // ================= LOGGED IN USER DETAILS =================
 string name, surname;   // name and surname of the person who logged in
 int account_num;        // account number of the person who logged in
-int getIndex = -1;      // position of the logged in user in the arrays
+int gcontent://media/external/file/248774etIndex = -1;      // position of the logged in user in the arrays
 bool isUser = false;    // true when the login was successful
 
 // menu option that the user chooses
@@ -95,6 +95,49 @@ void deposit(double balance)
     cout << " AMOUNT DEPOSITED    R" << depositCash << endl << endl;
     cout << " ACCOUNT BALANCE     R" << balance << endl;
     cout << "=========================================================" << endl;
+}
+
+// Option 3: takes money out of the account
+void withdraw(double balance)
+{
+    double withdrawCash;
+
+    cout << "Enter amount to withdraw" << endl;
+    cout << "=R";
+    withdrawCash = readAmount();
+
+    // the amount must be more than 0
+    if (withdrawCash <= 0)
+    {
+        cout << "Invalid amount. The amount must be a number more than 0" << endl;
+        return;
+    }
+
+    // the user cannot withdraw more than the balance
+    if (balance < withdrawCash)
+    {
+        cout << "You have insufficient funds" << endl;
+    }
+    else
+    {
+        balance = balance - withdrawCash;   // take the money out
+        balances[getIndex] = balance;       // save the new balance in the array
+
+        // convert the account number to text so we can show only the last 4 digits
+        string accountText = to_string(account_numbers[getIndex]);
+
+        // print the receipt
+        cout << "=========================================================" << endl;
+        cout << " NB SMART BANKING SYSTEMS             Transaction record" << endl << endl;
+        cout << "                                CASH WITHDRAWAL RECEIPT" << endl << endl;
+        cout << " TRANSACTION DATE   ";
+        showDate();
+        cout << " FROM ACCOUNT        " << "*************" << accountText.substr(4, 4) << endl << endl;
+        cout << " AMOUNT WITHDRAWN   R -" << withdrawCash << endl << endl;
+        cout << " AVAILABLE FUNDS    R " << balance << endl << endl;
+        cout << " ACCOUNT BALANCE    R " << balance << endl;
+        cout << "=========================================================" << endl;
+    }
 }
 
 // ================= LOGIN FUNCTIONS =================
@@ -173,6 +216,7 @@ void menu()
     cout << "Choose option" << endl;
     cout << "1. Check Balance & Account Details" << endl;
     cout << "2. Deposit Cash" << endl;
+    cout << "3. Withdraw Cash" << endl;
     cout << "5. Sign out" << endl;
     cout << "0. Exit" << endl;
     cout << "= ";
@@ -194,6 +238,9 @@ void menu()
         break;
     case 2:
         deposit(balances[getIndex]);
+        break;
+    case 3:
+        withdraw(balances[getIndex]);
         break;
     case 5:
         cout << "You have been signed out" << endl;
