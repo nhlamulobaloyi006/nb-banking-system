@@ -21,7 +21,7 @@ double balances[4] = {0, 10, 25, 30};
 // ================= LOGGED IN USER DETAILS =================
 string name, surname;   // name and surname of the person who logged in
 int account_num;        // account number of the person who logged in
-int gcontent://media/external/file/248774etIndex = -1;      // position of the logged in user in the arrays
+int getIndex = -1;      // position of the logged in user in the arrays
 bool isUser = false;    // true when the login was successful
 
 // menu option that the user chooses
@@ -140,6 +140,102 @@ void withdraw(double balance)
     }
 }
 
+// Option 4: sends money to another account
+void sendCash(double balance)
+{
+    string benName, benSurname, reference;   // beneficiary = the person receiving the money
+    int benAccount;
+    int benIndex = -1;                       // -1 means "not found yet"
+    double amount;
+
+    cout << "=======================" << endl;
+    cout << "    Beneficiaries" << endl;
+    cout << "=======================" << endl;
+
+    cout << "Enter beneficiary name" << endl;
+    cout << "= ";
+    cin >> benName;
+    cout << "Enter beneficiary surname" << endl;
+    cout << "= ";
+    cin >> benSurname;
+    cout << "Enter beneficiary account number" << endl;
+    cout << "= ";
+    cin >> benAccount;
+
+    // the account number must be a number
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        cout << "Invalid account number, please try again" << endl;
+        return;
+    }
+
+    cin.ignore(1000, '\n');   // remove the Enter key left over, so getline works
+    cout << "Enter beneficiary reference" << endl;
+    cout << "= ";
+    getline(cin, reference);  // getline allows spaces in the reference
+
+    // loop through all the users to find the beneficiary
+    for (int i = 0; i < 4; i++)
+    {
+        if (account_numbers[i] == benAccount && usernames[i] == benName && surnames[i] == benSurname)
+        {
+            benIndex = i;   // found the account
+        }
+    }
+
+    // the account does not exist
+    if (benIndex == -1)
+    {
+        cout << "Account not found. Check the name, surname and account number" << endl;
+        return;
+    }
+
+    // you cannot send money to yourself
+    if (benIndex == getIndex)
+    {
+        cout << "You cannot send cash to your own account" << endl;
+        return;
+    }
+
+    cout << "Enter amount" << endl;
+    cout << "=R";
+    amount = readAmount();
+
+    // the amount must be more than 0
+    if (amount <= 0)
+    {
+        cout << "Invalid amount. The amount must be a number more than 0" << endl;
+        return;
+    }
+
+    // check that the balance is enough
+    if (balance >= amount)
+    {
+        balances[benIndex] = balances[benIndex] + amount;   // beneficiary receives the money
+        balance = balance - amount;                         // we lose the money
+        balances[getIndex] = balance;                       // save our new balance
+
+        // print the proof of payment
+        cout << "=========================================================" << endl;
+        cout << " NB SMART BANKING SYSTEMS             Transaction record" << endl << endl;
+        cout << "                                PROOF OF PAYMENT" << endl << endl;
+        cout << " BENEFICIARY NAME            " << usernames[benIndex][0] << " " << surnames[benIndex] << endl;
+        cout << " BENEFICIARY ACCOUNT NUMBER  " << benAccount << endl;
+        cout << " BENEFICIARY REFERENCE       " << reference << endl;
+        cout << " AMOUNT SENT                 R " << amount << endl;
+        cout << " YOUR NEW BALANCE            R " << balance << endl << endl;
+        cout << " TRANSACTION DATE            ";
+        showDate();
+        cout << "=========================================================" << endl;
+    }
+    else
+    {
+        cout << "You have insufficient funds" << endl;
+    }
+}
+
 // ================= LOGIN FUNCTIONS =================
 
 // Checks that the username and pin were filled in correctly.
@@ -217,6 +313,7 @@ void menu()
     cout << "1. Check Balance & Account Details" << endl;
     cout << "2. Deposit Cash" << endl;
     cout << "3. Withdraw Cash" << endl;
+    cout << "4. Send Cash" << endl;
     cout << "5. Sign out" << endl;
     cout << "0. Exit" << endl;
     cout << "= ";
@@ -241,6 +338,9 @@ void menu()
         break;
     case 3:
         withdraw(balances[getIndex]);
+        break;
+    case 4:
+        sendCash(balances[getIndex]);
         break;
     case 5:
         cout << "You have been signed out" << endl;
