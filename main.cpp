@@ -27,6 +27,31 @@ bool isUser = false;    // true when the login was successful
 // menu option that the user chooses
 int option;
 
+// ================= HELPER FUNCTIONS =================
+
+// Prints the current date and time (used on the receipts)
+void showDate()
+{
+    time_t now = time(0);   // get the time right now
+    cout << ctime(&now);    // ctime already adds a new line at the end
+}
+
+// Asks for an amount and returns it.
+// Returns -1 if the user typed something that is not a number.
+double readAmount()
+{
+    double amount;
+    cin >> amount;
+
+    if (cin.fail())          // the user typed letters instead of a number
+    {
+        cin.clear();                // clear the error
+        cin.ignore(1000, '\n');     // throw away the wrong input
+        return -1;
+    }
+    return amount;
+}
+
 // ================= BANKING FUNCTIONS =================
 
 // Option 1: shows the account details and the current balance
@@ -38,6 +63,38 @@ void checkBalance(double balance)
     cout << "Account Holder: " << name[0] << " " << surname << endl; // first letter of the name + surname
     cout << "Account number: " << account_num << endl;
     cout << "Balance: R" << balance << endl;
+}
+
+// Option 2: adds money to the account
+void deposit(double balance)
+{
+    double depositCash;
+
+    cout << "Enter amount to deposit" << endl;
+    cout << "=R";
+    depositCash = readAmount();
+
+    // the amount must be more than 0
+    if (depositCash <= 0)
+    {
+        cout << "Invalid amount. The amount must be a number more than 0" << endl;
+        return;   // go back to the menu
+    }
+
+    balance = balance + depositCash;   // add the money
+    balances[getIndex] = balance;      // save the new balance in the array
+
+    // print the receipt
+    cout << "=========================================================" << endl;
+    cout << " NB SMART BANKING SYSTEMS             Transaction record" << endl << endl;
+    cout << "                                CASH DEPOSIT RECEIPT" << endl << endl;
+    cout << " TRANSACTION DATE   ";
+    showDate();
+    cout << " CUSTOMER NAME      " << name[0] << " " << surname << endl << endl;
+    cout << " TO ACCOUNT         " << account_num << endl << endl;
+    cout << " AMOUNT DEPOSITED    R" << depositCash << endl << endl;
+    cout << " ACCOUNT BALANCE     R" << balance << endl;
+    cout << "=========================================================" << endl;
 }
 
 // ================= LOGIN FUNCTIONS =================
@@ -115,6 +172,7 @@ void menu()
     cout << "=======================" << endl;
     cout << "Choose option" << endl;
     cout << "1. Check Balance & Account Details" << endl;
+    cout << "2. Deposit Cash" << endl;
     cout << "5. Sign out" << endl;
     cout << "0. Exit" << endl;
     cout << "= ";
@@ -133,6 +191,9 @@ void menu()
     {
     case 1:
         checkBalance(balances[getIndex]);
+        break;
+    case 2:
+        deposit(balances[getIndex]);
         break;
     case 5:
         cout << "You have been signed out" << endl;
